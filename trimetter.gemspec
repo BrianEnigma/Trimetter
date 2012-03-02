@@ -15,6 +15,6 @@ Gem::Specification.new { |s|
     s.executables = [
         'trimetter',
     ]
-    s.homepage = 'http://example.com'
+    s.homepage = 'http://github.com/BrianEnigma/Trimetter'
 }
 
