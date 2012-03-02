@@ -1,0 +1,61 @@
+#!/usr/bin/ruby
+# Trimetter : a simple Ruby library for interfacing with Trimet data
+# Copyright (C) 2012, Brian Enigma <http://netninja.com>
+#
+# For more information about this library see: (TBD)
+# For more information about the Trimet API see: <http://developer.trimet.org/>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+require "trimetter"
+
+if ARGV.length < 2
+    print "Usage: trimetter [developer_id] stop_id route_number\n"
+    print "\n"
+    print "developer_id is the token you received from Trimet for accessing the API.\n"
+    print "    For more information, see http://developer.trimet.org\n"
+    print "    It can be omitted if you have a ~/.trimetid file containing just your ID\n"
+    print "stop_id is the number printed on (or associated with) the bus stop\n"
+    print "route_number is the bus number\n"
+    print "\n"
+    print "Example: trimetter 11925 14\n"
+    exit 1
+end
+
+developer_id = nil
+developer_id = ARGV.shift if ARGV.length >= 3
+stop_id = ARGV.shift
+route_number = ARGV.shift
+
+trimetter = TrimetterArrivalQuery.new()
+trimetter.debug = false
+stop_list = Array.new
+stop_list << stop_id
+trimetter.stop_list = stop_list
+route_list = Array.new
+route_list << route_number
+trimetter.route_list = route_list
+trimetter.developer_id = developer_id if developer_id != nil
+results = Array.new()
+error_string = ''
+if !trimetter.fetch_update(results, error_string)
+    print "Error fetching Trimet data\n"
+    print "#{error_string}\n"
+else
+    #print "\n\n"
+    print "Received #{results.length} result#{results.length == 1 ? '' : 's'}\n"
+    results.each { |result| print "#{result.to_s}\n" }
+end
+
